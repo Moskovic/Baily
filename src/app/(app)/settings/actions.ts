@@ -5,7 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 
 const profileSchema = z.object({
-  full_name: z.string().min(1).max(120),
+  full_name: z.string().max(120).optional().or(z.literal("")),
   address: z.string().max(300).optional().or(z.literal("")),
 });
 
@@ -23,7 +23,7 @@ export async function updateProfile(formData: FormData) {
   const { error } = await supabase
     .from("profiles")
     .update({
-      full_name: parsed.data.full_name,
+      full_name: parsed.data.full_name || null,
       address: parsed.data.address || null,
     })
     .eq("id", user.id);
