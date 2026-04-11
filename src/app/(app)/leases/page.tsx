@@ -59,61 +59,110 @@ export default async function LeasesPage() {
           description="Créez au moins un bien et un locataire avant d'ajouter un bail."
         />
       ) : leases && leases.length > 0 ? (
-        <div className="rounded-lg border bg-card overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Bien</TableHead>
-                <TableHead className="hidden sm:table-cell">Locataire</TableHead>
-                <TableHead>Loyer</TableHead>
-                <TableHead className="hidden md:table-cell">Charges</TableHead>
-                <TableHead className="hidden md:table-cell">Début</TableHead>
-                <TableHead className="w-24 text-right" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {(leases as LeaseRow[]).map((l) => (
-                <TableRow key={l.id}>
-                  <TableCell className="font-medium">
-                    {l.properties?.label ?? "—"}
-                    <div className="text-xs text-muted-foreground sm:hidden">
+        <>
+          {/* Mobile: card list */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {(leases as LeaseRow[]).map((l) => (
+              <div key={l.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{l.properties?.label ?? "—"}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">
                       {l.tenants?.full_name ?? "—"}
                     </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">{l.tenants?.full_name ?? "—"}</TableCell>
-                  <TableCell>{formatCurrency(l.rent_amount)}</TableCell>
-                  <TableCell className="hidden md:table-cell">{formatCurrency(l.charges_amount)}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {formatDate(l.start_date)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
-                      <LeaseDialog
-                        properties={properties ?? []}
-                        tenants={tenants ?? []}
-                        id={l.id}
-                        defaults={{
-                          property_id: l.property_id,
-                          tenant_id: l.tenant_id,
-                          rent_amount: Number(l.rent_amount),
-                          charges_amount: Number(l.charges_amount),
-                          payment_day: l.payment_day,
-                          start_date: l.start_date,
-                          end_date: l.end_date ?? "",
-                        }}
-                      >
-                        <Button variant="ghost" size="icon" title="Modifier">
-                          <Pencil />
-                        </Button>
-                      </LeaseDialog>
-                      <DeleteLeaseButton id={l.id} />
+                  </div>
+                  <div className="text-right shrink-0">
+                    <div className="font-semibold tabular-nums">
+                      {formatCurrency(Number(l.rent_amount) + Number(l.charges_amount))}
                     </div>
-                  </TableCell>
+                    <div className="text-xs text-muted-foreground">/ mois</div>
+                  </div>
+                </div>
+                <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
+                  <span>Loyer {formatCurrency(l.rent_amount)}</span>
+                  <span>Charges {formatCurrency(l.charges_amount)}</span>
+                  <span>Depuis {formatDate(l.start_date)}</span>
+                </div>
+                <div className="mt-3 flex items-center justify-end gap-1 border-t pt-3">
+                  <LeaseDialog
+                    properties={properties ?? []}
+                    tenants={tenants ?? []}
+                    id={l.id}
+                    defaults={{
+                      property_id: l.property_id,
+                      tenant_id: l.tenant_id,
+                      rent_amount: Number(l.rent_amount),
+                      charges_amount: Number(l.charges_amount),
+                      payment_day: l.payment_day,
+                      start_date: l.start_date,
+                      end_date: l.end_date ?? "",
+                    }}
+                  >
+                    <Button variant="ghost" size="sm">
+                      <Pencil />
+                      Modifier
+                    </Button>
+                  </LeaseDialog>
+                  <DeleteLeaseButton id={l.id} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden rounded-lg border bg-card sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Bien</TableHead>
+                  <TableHead>Locataire</TableHead>
+                  <TableHead>Loyer</TableHead>
+                  <TableHead className="hidden md:table-cell">Charges</TableHead>
+                  <TableHead className="hidden md:table-cell">Début</TableHead>
+                  <TableHead className="w-24 text-right" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {(leases as LeaseRow[]).map((l) => (
+                  <TableRow key={l.id}>
+                    <TableCell className="font-medium">
+                      {l.properties?.label ?? "—"}
+                    </TableCell>
+                    <TableCell>{l.tenants?.full_name ?? "—"}</TableCell>
+                    <TableCell>{formatCurrency(l.rent_amount)}</TableCell>
+                    <TableCell className="hidden md:table-cell">{formatCurrency(l.charges_amount)}</TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {formatDate(l.start_date)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <LeaseDialog
+                          properties={properties ?? []}
+                          tenants={tenants ?? []}
+                          id={l.id}
+                          defaults={{
+                            property_id: l.property_id,
+                            tenant_id: l.tenant_id,
+                            rent_amount: Number(l.rent_amount),
+                            charges_amount: Number(l.charges_amount),
+                            payment_day: l.payment_day,
+                            start_date: l.start_date,
+                            end_date: l.end_date ?? "",
+                          }}
+                        >
+                          <Button variant="ghost" size="icon" title="Modifier">
+                            <Pencil />
+                          </Button>
+                        </LeaseDialog>
+                        <DeleteLeaseButton id={l.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : (
         <EmptyState
           icon={<FileText />}

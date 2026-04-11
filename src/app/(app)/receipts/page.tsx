@@ -156,59 +156,86 @@ export default async function ReceiptsPage({
                   </div>
                 </summary>
                 <div className="border-t bg-background">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Bien</TableHead>
-                        <TableHead className="hidden sm:table-cell">Locataire</TableHead>
-                        <TableHead className="hidden sm:table-cell">Total</TableHead>
-                        <TableHead>Statut</TableHead>
-                        <TableHead className="w-auto sm:w-40 text-right" />
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {rows.map((r) => {
-                        const property = flatten(r.leases?.properties);
-                        const tenant = flatten(r.leases?.tenants);
-                        const total = Number(r.rent_amount) + Number(r.charges_amount);
-                        return (
-                          <TableRow key={r.id}>
-                            <TableCell className="font-medium">
-                              <Link href={`/receipts/${r.id}`} className="hover:underline">
-                                {property?.label ?? "—"}
-                              </Link>
-                              <div className="text-xs text-muted-foreground sm:hidden">
-                                {tenant?.full_name ?? "—"} · {formatCurrency(total)}
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">{tenant?.full_name ?? "—"}</TableCell>
-                            <TableCell className="hidden sm:table-cell tabular-nums">
-                              {formatCurrency(total)}
-                            </TableCell>
-                            <TableCell>
-                              <StatusBadge status={r.status} />
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center justify-end gap-1">
-                                <Button asChild size="icon" variant="ghost" title="Aperçu">
-                                  <Link href={`/receipts/${r.id}`}>
-                                    <Eye />
-                                  </Link>
-                                </Button>
-                                <Button asChild size="icon" variant="ghost" title="Télécharger le PDF">
-                                  <Link href={`/api/receipts/${r.id}/pdf`} target="_blank">
-                                    <Download />
-                                  </Link>
-                                </Button>
-                                <SendButton id={r.id} disabled={r.status === "sent"} />
-                                <DeleteReceiptButton id={r.id} />
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
+                  {/* Mobile: card list */}
+                  <div className="flex flex-col divide-y sm:hidden">
+                    {rows.map((r) => {
+                      const property = flatten(r.leases?.properties);
+                      const tenant = flatten(r.leases?.tenants);
+                      const total = Number(r.rent_amount) + Number(r.charges_amount);
+                      return (
+                        <Link
+                          key={r.id}
+                          href={`/receipts/${r.id}`}
+                          className="flex items-center gap-3 px-4 py-3 active:bg-muted/40"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-sm">
+                              {property?.label ?? "—"}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {tenant?.full_name ?? "—"} · {formatCurrency(total)}
+                            </div>
+                          </div>
+                          <StatusBadge status={r.status} />
+                          <ChevronRight className="size-4 text-muted-foreground shrink-0" />
+                        </Link>
+                      );
+                    })}
+                  </div>
+
+                  {/* Desktop: table */}
+                  <div className="hidden sm:block">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Bien</TableHead>
+                          <TableHead>Locataire</TableHead>
+                          <TableHead>Total</TableHead>
+                          <TableHead>Statut</TableHead>
+                          <TableHead className="w-40 text-right" />
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {rows.map((r) => {
+                          const property = flatten(r.leases?.properties);
+                          const tenant = flatten(r.leases?.tenants);
+                          const total = Number(r.rent_amount) + Number(r.charges_amount);
+                          return (
+                            <TableRow key={r.id}>
+                              <TableCell className="font-medium">
+                                <Link href={`/receipts/${r.id}`} className="hover:underline">
+                                  {property?.label ?? "—"}
+                                </Link>
+                              </TableCell>
+                              <TableCell>{tenant?.full_name ?? "—"}</TableCell>
+                              <TableCell className="tabular-nums">
+                                {formatCurrency(total)}
+                              </TableCell>
+                              <TableCell>
+                                <StatusBadge status={r.status} />
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center justify-end gap-1">
+                                  <Button asChild size="icon" variant="ghost" title="Aperçu">
+                                    <Link href={`/receipts/${r.id}`}>
+                                      <Eye />
+                                    </Link>
+                                  </Button>
+                                  <Button asChild size="icon" variant="ghost" title="Télécharger le PDF">
+                                    <Link href={`/api/receipts/${r.id}/pdf`} target="_blank">
+                                      <Download />
+                                    </Link>
+                                  </Button>
+                                  <SendButton id={r.id} disabled={r.status === "sent"} />
+                                  <DeleteReceiptButton id={r.id} />
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </details>
             );

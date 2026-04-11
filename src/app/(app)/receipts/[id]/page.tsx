@@ -103,12 +103,37 @@ export default async function ReceiptDetailPage({
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
-        <Card className="overflow-hidden p-0">
+        {/* PDF preview — hidden on mobile, shown as iframe on larger screens */}
+        <Card className="hidden overflow-hidden p-0 sm:block">
           <iframe
             src={`/api/receipts/${receipt.id}/pdf`}
             title="Aperçu quittance"
-            className="h-[500px] w-full border-0 bg-muted sm:h-[700px] lg:h-[900px]"
+            className="h-[700px] w-full border-0 bg-muted lg:h-[900px]"
           />
+        </Card>
+
+        {/* Mobile: prominent download button instead of iframe */}
+        <Card className="sm:hidden">
+          <CardContent className="flex flex-col items-center gap-4 py-8 text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-primary/10">
+              <Download className="size-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium">Aperçu PDF</p>
+              <p className="text-sm text-muted-foreground">
+                Ouvrez le document pour le consulter
+              </p>
+            </div>
+            <a
+              href={`/api/receipts/${receipt.id}/pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(buttonVariants({ size: "lg" }), "w-full")}
+            >
+              <Download />
+              Ouvrir le PDF
+            </a>
+          </CardContent>
         </Card>
 
         <div className="flex flex-col gap-4">

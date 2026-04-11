@@ -39,59 +39,97 @@ export default async function PropertiesPage() {
       />
 
       {properties && properties.length > 0 ? (
-        <div className="rounded-lg border bg-card overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Libellé</TableHead>
-                <TableHead className="hidden sm:table-cell">Type</TableHead>
-                <TableHead className="hidden md:table-cell">Adresse</TableHead>
-                <TableHead className="hidden sm:table-cell">Ville</TableHead>
-                <TableHead className="w-24 text-right" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {properties.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell className="font-medium">
-                    {p.label}
-                    <div className="text-xs text-muted-foreground sm:hidden">
+        <>
+          {/* Mobile: card list */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {properties.map((p) => (
+              <div key={p.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{p.label}</div>
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      {p.address}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
                       {p.postal_code} {p.city}
                     </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    <Badge variant="secondary">
-                      {PROPERTY_TYPE_LABELS[(p.type ?? "apartment") as PropertyType]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">{p.address}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    {p.postal_code} {p.city}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
-                      <PropertyDialog
-                        id={p.id}
-                        defaults={{
-                          label: p.label,
-                          type: (p.type ?? "apartment") as PropertyType,
-                          address: p.address,
-                          city: p.city,
-                          postal_code: p.postal_code,
-                        }}
-                      >
-                        <Button variant="ghost" size="icon" title="Modifier">
-                          <Pencil />
-                        </Button>
-                      </PropertyDialog>
-                      <DeleteButton id={p.id} />
-                    </div>
-                  </TableCell>
+                  </div>
+                  <Badge variant="secondary" className="shrink-0">
+                    {PROPERTY_TYPE_LABELS[(p.type ?? "apartment") as PropertyType]}
+                  </Badge>
+                </div>
+                <div className="mt-3 flex items-center justify-end gap-1 border-t pt-3">
+                  <PropertyDialog
+                    id={p.id}
+                    defaults={{
+                      label: p.label,
+                      type: (p.type ?? "apartment") as PropertyType,
+                      address: p.address,
+                      city: p.city,
+                      postal_code: p.postal_code,
+                    }}
+                  >
+                    <Button variant="ghost" size="sm">
+                      <Pencil />
+                      Modifier
+                    </Button>
+                  </PropertyDialog>
+                  <DeleteButton id={p.id} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden rounded-lg border bg-card sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Libellé</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead className="hidden md:table-cell">Adresse</TableHead>
+                  <TableHead>Ville</TableHead>
+                  <TableHead className="w-24 text-right" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {properties.map((p) => (
+                  <TableRow key={p.id}>
+                    <TableCell className="font-medium">{p.label}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {PROPERTY_TYPE_LABELS[(p.type ?? "apartment") as PropertyType]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">{p.address}</TableCell>
+                    <TableCell>
+                      {p.postal_code} {p.city}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <PropertyDialog
+                          id={p.id}
+                          defaults={{
+                            label: p.label,
+                            type: (p.type ?? "apartment") as PropertyType,
+                            address: p.address,
+                            city: p.city,
+                            postal_code: p.postal_code,
+                          }}
+                        >
+                          <Button variant="ghost" size="icon" title="Modifier">
+                            <Pencil />
+                          </Button>
+                        </PropertyDialog>
+                        <DeleteButton id={p.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : (
         <EmptyState
           icon={<Building2 />}

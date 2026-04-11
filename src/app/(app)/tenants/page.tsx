@@ -37,51 +37,84 @@ export default async function TenantsPage() {
       />
 
       {tenants && tenants.length > 0 ? (
-        <div className="rounded-lg border bg-card overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead className="hidden sm:table-cell">Email</TableHead>
-                <TableHead className="hidden md:table-cell">Téléphone</TableHead>
-                <TableHead className="w-24 text-right" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {tenants.map((t) => (
-                <TableRow key={t.id}>
-                  <TableCell className="font-medium">
-                    {t.full_name}
-                    <div className="text-xs text-muted-foreground sm:hidden">
+        <>
+          {/* Mobile: card list */}
+          <div className="flex flex-col gap-3 sm:hidden">
+            {tenants.map((t) => (
+              <div key={t.id} className="rounded-lg border bg-card p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium">{t.full_name}</div>
+                    <div className="mt-1 text-sm text-muted-foreground truncate">
                       {t.email}
                     </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">{t.email}</TableCell>
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {t.phone || "—"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
-                      <TenantDialog
-                        id={t.id}
-                        defaults={{
-                          full_name: t.full_name,
-                          email: t.email,
-                          phone: t.phone ?? "",
-                        }}
-                      >
-                        <Button variant="ghost" size="icon" title="Modifier">
-                          <Pencil />
-                        </Button>
-                      </TenantDialog>
-                      <DeleteTenantButton id={t.id} />
-                    </div>
-                  </TableCell>
+                    {t.phone && (
+                      <div className="text-sm text-muted-foreground">{t.phone}</div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center justify-end gap-1 border-t pt-3">
+                  <TenantDialog
+                    id={t.id}
+                    defaults={{
+                      full_name: t.full_name,
+                      email: t.email,
+                      phone: t.phone ?? "",
+                    }}
+                  >
+                    <Button variant="ghost" size="sm">
+                      <Pencil />
+                      Modifier
+                    </Button>
+                  </TenantDialog>
+                  <DeleteTenantButton id={t.id} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden rounded-lg border bg-card sm:block">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead className="hidden md:table-cell">Téléphone</TableHead>
+                  <TableHead className="w-24 text-right" />
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+              </TableHeader>
+              <TableBody>
+                {tenants.map((t) => (
+                  <TableRow key={t.id}>
+                    <TableCell className="font-medium">{t.full_name}</TableCell>
+                    <TableCell>{t.email}</TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {t.phone || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <TenantDialog
+                          id={t.id}
+                          defaults={{
+                            full_name: t.full_name,
+                            email: t.email,
+                            phone: t.phone ?? "",
+                          }}
+                        >
+                          <Button variant="ghost" size="icon" title="Modifier">
+                            <Pencil />
+                          </Button>
+                        </TenantDialog>
+                        <DeleteTenantButton id={t.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </>
       ) : (
         <EmptyState
           icon={<Users />}
