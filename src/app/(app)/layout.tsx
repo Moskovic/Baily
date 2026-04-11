@@ -11,6 +11,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/nav-link";
+import { MobileNav } from "@/components/mobile-nav";
 
 export default async function AppLayout({
   children,
@@ -25,7 +26,9 @@ export default async function AppLayout({
   if (!user) redirect("/login");
 
   return (
-    <div className="flex min-h-screen flex-1 bg-muted/30 p-3 gap-3">
+    <div className="flex min-h-screen flex-1 flex-col md:flex-row bg-muted/30 md:p-3 md:gap-3">
+      <MobileNav email={user.email ?? ""} />
+
       <aside className="hidden w-60 shrink-0 md:flex md:flex-col rounded-2xl border bg-card shadow-sm sticky top-3 h-[calc(100vh-1.5rem)]">
         <div className="flex h-16 items-center px-5">
           <Link
@@ -72,8 +75,8 @@ export default async function AppLayout({
         </div>
       </aside>
 
-      <main className="flex-1 rounded-2xl border bg-background shadow-sm overflow-hidden">
-        <div className="mx-auto max-w-6xl px-8 py-10">{children}</div>
+      <main className="flex-1 md:rounded-2xl md:border bg-background md:shadow-sm overflow-hidden">
+        <div className="mx-auto max-w-6xl px-4 py-6 md:px-8 md:py-10">{children}</div>
       </main>
     </div>
   );

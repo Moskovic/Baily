@@ -6,5 +6,6 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="96" fill="url(#g)"/>
-  <text x="256" y="340" font-family="system-ui,-apple-system,sans-serif" font-weight="700" font-size="280" fill="white" text-anchor="middle">B</text>
+  <!-- B letter as path -->
+  <path d="M176 128h80c22 0 40 4 54 13s21 22 21 39c0 14-5 25-14 34s-21 14-36 17v1c19 2 34 9 44 20s16 24 16 40c0 20-8 36-24 47s-38 17-65 17H176V128zm48 82h32c13 0 23-3 30-8s11-13 11-23-4-18-11-23-17-7-30-7h-32v61zm0 88h38c14 0 25-3 33-9s12-15 12-26-4-19-12-25-19-9-33-9h-38v69z" fill="white"/>
 </svg>
