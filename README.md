@@ -1,36 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quito
 
-## Getting Started
+Édition et envoi de quittances de loyer. Next.js 16 · Supabase · shadcn/ui · @react-pdf/renderer.
 
-First, run the development server:
+## Stack
+
+- **Next.js 16** (App Router, TypeScript, React 19, Server Actions)
+- **Tailwind v4** + **shadcn/ui**
+- **Supabase** (Postgres + Auth + RLS)
+- **@react-pdf/renderer** pour les PDF
+- **Gmail API** via OAuth (à venir) pour l'envoi
+
+## Démarrage
+
+### 1. Variables d'environnement
+
+```bash
+cp .env.example .env.local
+```
+
+Récupère les clés dans ton projet Supabase (Settings → API) :
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+### 2. Schéma base de données
+
+Dans le dashboard Supabase → **SQL Editor**, exécute le contenu de `supabase/migrations/0001_init.sql`.
+
+Cela crée `profiles`, `properties`, `tenants`, `leases`, `receipts`, active RLS partout, et ajoute un trigger pour créer le profil à l'inscription.
+
+### 3. Auth
+
+Magic link email. Dans Supabase :
+- Authentication → URL Configuration → Site URL : `http://localhost:3000`
+- Redirect URLs : `http://localhost:3000/auth/callback`
+
+### 4. Lancer
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvre http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Architecture
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (app)/                 # routes protégées (layout vérifie l'auth)
+│   │   ├── dashboard/
+│   │   ├── properties/
+│   │   ├── tenants/
+│   │   ├── leases/
+│   │   └── receipts/
+│   ├── api/receipts/[id]/pdf/ # génération PDF server-side
+│   ├── auth/                  # callback magic link + signout
+│   └── login/
+├── components/ui/             # shadcn primitives
+├── lib/
+│   ├── supabase/              # client, server, middleware, types
+│   ├── pdf/                   # template react-pdf
+│   └── schemas.ts             # validation Zod
+├── middleware.ts              # refresh session + guard
+└── supabase/migrations/       # SQL
+```
 
-## Learn More
+## Sécurité
 
-To learn more about Next.js, take a look at the following resources:
+- **RLS Supabase** sur toutes les tables, policies `auth.uid() = owner_id`
+- **Server Actions** + **Zod** pour toute mutation
+- **Service role key** jamais exposée côté client
+- Sessions via cookies httpOnly (`@supabase/ssr`)
+- Le middleware rafraîchit la session à chaque requête et redirige vers `/login` si non authentifié
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Déploiement (Vercel)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Push sur GitHub
+2. Import dans Vercel
+3. Variables d'env : copier celles de `.env.local`
+4. Ajouter l'URL de prod dans Supabase → Auth → Redirect URLs
+5. Deploy
 
-## Deploy on Vercel
+## Roadmap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [ ] Gmail OAuth (scope `gmail.send`) + route `/api/receipts/[id]/send`
+- [ ] Page profil (adresse du bailleur, signature)
+- [ ] Chiffrement de `gmail_refresh_token` via `pgsodium`
+- [ ] Édition d'une quittance
+- [ ] Batch : générer toutes les quittances du mois en un clic
+- [ ] Tests (Vitest + Playwright)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Scripts
+
+```bash
+npm run dev     # dev server
+npm run build   # production build
+npm run start   # serve build
+npm run lint    # eslint
+```
