@@ -1,4 +1,4 @@
-import { CheckCircle2, Mail, PenLine } from "lucide-react";
+import { CheckCircle2, Mail, Palette, PenLine } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +13,7 @@ import {
 import { SignaturePad } from "@/components/signature-pad";
 import { ProfileForm } from "./profile-form";
 import { DisconnectGmailButton } from "./disconnect-gmail";
+import { ThemeSelect } from "@/components/theme-select";
 
 type SearchParams = Promise<{ gmail_ok?: string; gmail_error?: string }>;
 
@@ -41,6 +42,21 @@ export default async function SettingsPage({
       />
 
       <div className="flex flex-col gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Palette className="size-5" />
+              Apparence
+            </CardTitle>
+            <CardDescription>
+              Choisissez le thème de l&apos;interface.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ThemeSelect />
+          </CardContent>
+        </Card>
+
         <Card>
           <CardHeader>
             <CardTitle>Profil bailleur</CardTitle>

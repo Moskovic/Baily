@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/user-avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const links = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Tableau de bord" },
@@ -25,7 +27,7 @@ const links = [
   { href: "/settings", icon: Settings, label: "Paramètres" },
 ];
 
-export function MobileNav({ email }: { email: string }) {
+export function MobileNav({ email, displayName }: { email: string; displayName: string }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -101,8 +103,13 @@ export function MobileNav({ email }: { email: string }) {
         </nav>
 
         <div className="border-t p-4">
-          <div className="mb-2 px-1 text-xs text-muted-foreground truncate">
-            {email}
+          <div className="mb-3 flex items-center gap-2.5 px-1">
+            <UserAvatar name={displayName} size={28} />
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-medium">{displayName}</div>
+              <div className="truncate text-xs text-muted-foreground">{email}</div>
+            </div>
+            <ThemeToggle />
           </div>
           <form action="/auth/signout" method="post">
             <Button

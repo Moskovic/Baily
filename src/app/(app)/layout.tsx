@@ -12,6 +12,8 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/nav-link";
 import { MobileNav } from "@/components/mobile-nav";
+import { UserAvatar } from "@/components/user-avatar";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function AppLayout({
   children,
@@ -25,9 +27,17 @@ export default async function AppLayout({
 
   if (!user) redirect("/login");
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("full_name")
+    .eq("id", user.id)
+    .single();
+
+  const displayName = profile?.full_name || user.email || "Utilisateur";
+
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row bg-muted/30 md:p-3 md:gap-3">
-      <MobileNav email={user.email ?? ""} />
+      <MobileNav email={user.email ?? ""} displayName={displayName} />
 
       <aside className="hidden w-60 shrink-0 md:flex md:flex-col rounded-2xl border bg-card shadow-sm sticky top-3 h-[calc(100vh-1.5rem)]">
         <div className="flex h-16 items-center px-5">
@@ -59,8 +69,12 @@ export default async function AppLayout({
           </NavLink>
         </nav>
         <div className="border-t p-3">
-          <div className="mb-2 px-2 text-xs text-muted-foreground truncate">
-            {user.email}
+          <div className="mb-2 flex items-center gap-2.5 px-2">
+            <UserAvatar name={displayName} size={28} />
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-medium">{displayName}</div>
+            </div>
+            <ThemeToggle />
           </div>
           <form action="/auth/signout" method="post">
             <Button
