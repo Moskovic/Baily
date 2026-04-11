@@ -43,7 +43,7 @@ export function OnboardingChecklist({ status }: { status: Status }) {
   if (allDone) return null;
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-transparent">
+    <Card className="mb-6 border-primary/20 bg-gradient-to-br from-primary/5 via-transparent to-transparent">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
