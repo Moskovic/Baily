@@ -115,7 +115,7 @@ export function ReceiptDialog({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label>Mois</Label>
               <Select value={month} onValueChange={setMonth}>
@@ -144,7 +144,7 @@ export function ReceiptDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field
               label="Loyer (€)"
               name="rent_amount"
