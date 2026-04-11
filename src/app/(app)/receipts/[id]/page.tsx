@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
+import { OpenPdfButton } from "@/components/open-pdf-button";
 import { SendButton } from "../send-button";
 import { EditReceiptDialog } from "./edit-dialog";
 
@@ -76,15 +77,13 @@ export default async function ReceiptDetailPage({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <a
+          <OpenPdfButton
             href={`/api/receipts/${receipt.id}/pdf`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(buttonVariants({ variant: "outline" }))}
+            variant="outline"
           >
             <Download />
             Télécharger
-          </a>
+          </OpenPdfButton>
           <EditReceiptDialog
             id={receipt.id}
             defaults={{
@@ -124,15 +123,14 @@ export default async function ReceiptDetailPage({
                 Ouvrez le document pour le consulter
               </p>
             </div>
-            <a
+            <OpenPdfButton
               href={`/api/receipts/${receipt.id}/pdf`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={cn(buttonVariants({ size: "lg" }), "w-full")}
+              size="lg"
+              className="w-full"
             >
               <Download />
               Ouvrir le PDF
-            </a>
+            </OpenPdfButton>
           </CardContent>
         </Card>
 
