@@ -94,7 +94,7 @@ export function ReceiptDialog({
         <DialogHeader>
           <DialogTitle>Nouvelle quittance</DialogTitle>
         </DialogHeader>
-        <form action={onSubmit} className="flex flex-col gap-4">
+        <form action={onSubmit} className="flex flex-col gap-4 min-w-0 overflow-hidden">
           <div className="flex flex-col gap-2">
             <Label>Bail</Label>
             <Select value={leaseId} onValueChange={setLeaseId}>

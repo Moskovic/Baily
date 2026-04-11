@@ -91,7 +91,7 @@ export function LeaseDialog({
         <DialogHeader>
           <DialogTitle>{isEdit ? "Modifier le bail" : "Nouveau bail"}</DialogTitle>
         </DialogHeader>
-        <form action={onSubmit} className="flex flex-col gap-4">
+        <form action={onSubmit} className="flex flex-col gap-4 min-w-0 overflow-hidden">
           <div className="flex flex-col gap-2">
             <Label>Bien</Label>
             <Select value={propertyId} onValueChange={setPropertyId}>
