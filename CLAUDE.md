@@ -61,7 +61,8 @@ src/
 │   │   └── signout/route.ts        # POST → sign out
 │   ├── (app)/                      # Protected layout (checks auth, has sidebar)
 │   │   ├── layout.tsx              # Floating sidebar + main card layout
-│   │   ├── dashboard/              # KPI cards (shiny 3D card), overdue calendar, test reminder button
+│   │   ├── dashboard/              # KPI cards (shiny 3D card), overdue calendar, test reminder button, onboarding checklist
+│   │   ├── onboarding/             # Multi-step wizard (checkpoint-based: profile → property → tenant → lease → Gmail)
 │   │   ├── properties/             # CRUD with type (apartment/garage), edit dialog
 │   │   ├── tenants/                # CRUD with edit dialog
 │   │   ├── leases/                 # CRUD with property/tenant selects, edit dialog
@@ -71,7 +72,7 @@ src/
 │   │   │   ├── [id]/edit-dialog.tsx
 │   │   │   ├── prepare/route.ts    # Find-or-create receipt for lease+period, redirect to preview
 │   │   │   └── ...
-│   │   └── settings/               # Profile form, signature pad, Gmail connect/disconnect
+│   │   └── settings/               # Profile form, signature pad, Gmail connect/disconnect, theme select
 │   └── api/
 │       ├── gmail/connect/          # GET → redirect to Google OAuth
 │       ├── gmail/callback/         # GET → exchange code, store tokens
@@ -81,10 +82,17 @@ src/
 ├── components/
 │   ├── ui/                         # shadcn primitives (button, input, card, table, dialog, select, badge, label, separator, sonner)
 │   ├── nav-link.tsx                # Sidebar active-state link
-│   ├── page-header.tsx             # Page title with eyebrow support
+│   ├── mobile-nav.tsx              # Mobile hamburger menu + slide-out drawer
+│   ├── page-header.tsx             # Page title with eyebrow support (responsive)
 │   ├── empty-state.tsx             # Polished empty state with icon + glow
 │   ├── shiny-card.tsx              # 3D tilt + cursor-following shine effect
-│   └── signature-pad.tsx           # Canvas drawing pad (1200x360 internal res)
+│   ├── signature-pad.tsx           # Canvas drawing pad (1200x360 internal res)
+│   ├── onboarding-checklist.tsx    # Dashboard progress card (hides when all done)
+│   ├── user-avatar.tsx             # Deterministic gradient avatar from name hash
+│   ├── theme-toggle.tsx            # Moon/Sun icon button (next-themes)
+│   ├── theme-select.tsx            # 3-button Clair/Sombre/Système selector
+│   ├── theme-provider.tsx          # NextThemesProvider wrapper
+│   └── open-pdf-button.tsx         # window.open() for PWA standalone PDF viewing
 ├── lib/
 │   ├── utils.ts                    # cn(), formatCurrency(), formatDate()
 │   ├── schemas.ts                  # Zod schemas + PROPERTY_TYPES constant
@@ -104,8 +112,13 @@ src/
 - **Shiny KPI card**: 3D tilt on hover with cursor-following highlight + specular sheen (ShinyCard component)
 - **Empty states**: centered icon (in primary/10 rounded box with blur halo) + title + description + CTA
 - **Receipts list**: grouped by month in `<details>` native drawers, current month open by default, year selector dropdown
-- **Dashboard**: 4 stat cards (uniform layout: icon+label row, big number below), overdue calendar with clickable status badges
+- **Dashboard**: 4 stat cards (uniform layout: icon+label row, big number below), overdue calendar with clickable status badges, onboarding checklist (auto-hides when done)
 - **Signature pad**: canvas 1200x360, lineWidth 6, exports PNG dataURL, shown in PDF at 220x90pt
+- **Responsive**: mobile card layouts replace tables, mobile nav burger drawer, PWA standalone support
+- **Dark mode**: system/light/dark via next-themes, violet-tinted dark palette
+- **Onboarding**: dashboard checklist + `/onboarding` wizard (5 steps, checkpoint-based — user can quit & resume anytime)
+- **PWA**: manifest.json, icons (violet gradient + white B), standalone display mode
+- **Avatars**: deterministic gradient from name hash, initials overlay
 
 ## Overdue reminder system
 - Dashboard has "Tester le rappel" button → server action detects overdue leases (payment_day past + no receipt this month)
@@ -131,7 +144,10 @@ src/
 ## Roadmap / TODO
 - [ ] Automatic overdue reminders via Vercel Cron (`/api/cron/overdue-reminders`)
 - [ ] Batch receipt generation (all leases for a month in one click)
-- [ ] Dark mode toggle
+- [x] Dark mode toggle
+- [x] Onboarding wizard + dashboard checklist
+- [x] PWA support
+- [x] Mobile responsive
 - [ ] Encrypt gmail_refresh_token via pgsodium
 - [ ] Generate Supabase types with CLI
 - [ ] Tests (Vitest + Playwright)
