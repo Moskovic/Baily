@@ -1,4 +1,4 @@
-# Quito
+# Baily
 
 Édition et envoi de quittances de loyer. Next.js 16 · Supabase · shadcn/ui · @react-pdf/renderer.
 

@@ -103,7 +103,7 @@ ${textLines}
 
 Total : ${formatCurrency(total)}
 
-— Quito`;
+— Baily`;
 
   const escapeHtml = (s: string) =>
     s
@@ -135,11 +135,11 @@ Total : ${formatCurrency(total)}
 <html>
 <body style="margin:0;padding:24px;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#111">
   <div style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:32px">
-    <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px">Quito</div>
+    <div style="font-size:20px;font-weight:700;letter-spacing:-0.01em;margin-bottom:4px">Baily</div>
     <div style="color:#666;font-size:13px;margin-bottom:24px">Rappel — ${escapeHtml(monthLabel)}</div>
     <h1 style="font-size:18px;font-weight:600;margin:0 0 8px">${overdue.length} quittance${overdue.length > 1 ? "s" : ""} en retard</h1>
     <p style="color:#555;margin:0 0 24px;line-height:1.6">
-      Bonjour ${escapeHtml(profile.full_name ?? "")}, les quittances suivantes n'ont pas encore été générées alors que la date d'échéance est passée. Cliquez sur "Préparer" pour ouvrir la quittance directement dans Quito et l'envoyer.
+      Bonjour ${escapeHtml(profile.full_name ?? "")}, les quittances suivantes n'ont pas encore été générées alors que la date d'échéance est passée. Cliquez sur "Préparer" pour ouvrir la quittance directement dans Baily et l'envoyer.
     </p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:8px">
       ${rows}
@@ -149,7 +149,7 @@ Total : ${formatCurrency(total)}
       <span style="font-weight:700">${formatCurrency(total)}</span>
     </div>
     <div style="margin-top:32px;padding-top:16px;border-top:1px solid #eee;color:#999;font-size:12px">
-      Email envoyé automatiquement par Quito.
+      Email envoyé automatiquement par Baily.
     </div>
   </div>
 </body>
@@ -159,9 +159,9 @@ Total : ${formatCurrency(total)}
     await sendEmailViaGmail({
       refreshToken: profile.gmail_refresh_token,
       from: profile.gmail_email,
-      fromName: "Quito",
+      fromName: "Baily",
       to: user.email!,
-      subject: `Quito — ${overdue.length} quittance(s) en retard`,
+      subject: `Baily — ${overdue.length} quittance(s) en retard`,
       bodyText,
       bodyHtml,
     });

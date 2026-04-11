@@ -7,7 +7,7 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Quito — Quittances de loyer",
+  title: "Baily — Quittances de loyer",
   description:
     "Éditez et envoyez vos quittances de loyer en quelques clics. Simple, rapide, sécurisé.",
 };

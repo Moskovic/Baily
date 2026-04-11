@@ -76,7 +76,7 @@ export default function LoginPage() {
         <CardHeader>
           <CardTitle className="text-3xl tracking-tight">
             <Link href="/" className="brand-text">
-              Quito
+              Baily
             </Link>
           </CardTitle>
           <CardDescription>

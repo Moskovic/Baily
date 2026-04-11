@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# Quito — Project Context
+# Baily — Project Context
 
-## What is Quito?
+## What is Baily?
 A web app to create, preview, and email rent receipts (quittances de loyer) to tenants.
 Built for the owner (Marius) and friends. Could become a SaaS.
 
@@ -28,7 +28,7 @@ Built for the owner (Marius) and friends. Could become a SaaS.
 - OAuth consent screen: external, test mode (test users manually added)
 - Scope: `gmail.send` + `userinfo.email` + `openid`
 - Credentials in `.env.local`: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`
-- Redirect URI: `http://localhost:3000/api/gmail/callback`
+- Redirect URIs: `http://localhost:3000/api/gmail/callback` (dev), `https://baily.app/api/gmail/callback` (prod)
 - Flow: `/api/gmail/connect` → Google consent → `/api/gmail/callback` → stores `gmail_refresh_token` + `gmail_email` in `profiles` table
 - Send: `/api/receipts/[id]/send` (POST) → refreshes token → builds MIME email with PDF attachment → Gmail API `users.messages.send`
 - Supports HTML+text multipart emails (used for overdue reminders with action buttons)
@@ -119,6 +119,15 @@ src/
 - `gmail_refresh_token` stored in plain text (TODO: encrypt with pgsodium/vault before prod)
 - Hydration mismatch can occur after many HMR edits — fix by clearing `.next` cache and restarting dev server
 
+## Deployment
+- **Domain**: `baily.app`
+- **Vercel**: project `baily`, auto-deploys from GitHub `Moskovic/Baily`
+- **GitHub**: `https://github.com/Moskovic/Baily`
+- **Prod URL**: `https://baily.app`
+- **Env vars**: configured in Vercel (NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI)
+- **Supabase Auth**: Site URL = `https://baily.app`, Redirect URLs includes `https://baily.app/**`
+- **Google OAuth**: redirect URI = `https://baily.app/api/gmail/callback`
+
 ## Roadmap / TODO
 - [ ] Automatic overdue reminders via Vercel Cron (`/api/cron/overdue-reminders`)
 - [ ] Batch receipt generation (all leases for a month in one click)
@@ -126,7 +135,6 @@ src/
 - [ ] Encrypt gmail_refresh_token via pgsodium
 - [ ] Generate Supabase types with CLI
 - [ ] Tests (Vitest + Playwright)
-- [ ] Deploy to Vercel + configure prod redirect URIs in Supabase + Google
 
 ## Commands
 ```bash

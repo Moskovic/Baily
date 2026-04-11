@@ -220,7 +220,7 @@ export function ReceiptPdf({ data }: { data: ReceiptPdfData }) {
         ) : null}
 
         <Text style={styles.footer}>
-          Document généré par Quito · {formatDateFr(new Date().toISOString())}
+          Document généré par Baily · {formatDateFr(new Date().toISOString())}
         </Text>
       </Page>
     </Document>

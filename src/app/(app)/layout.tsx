@@ -32,7 +32,7 @@ export default async function AppLayout({
             href="/dashboard"
             className="text-xl font-semibold tracking-tight brand-text"
           >
-            Quito
+            Baily
           </Link>
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 px-3 py-2">

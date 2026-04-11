@@ -8,7 +8,7 @@ export default function Home() {
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-lg font-semibold tracking-tight brand-text">
-            Quito
+            Baily
           </Link>
           <nav className="flex items-center gap-2">
             <Button asChild variant="ghost">
@@ -63,7 +63,7 @@ export default function Home() {
             <FeatureCard
               icon={<Mail />}
               title="Envoi Gmail"
-              description="Connectez votre boîte Gmail et envoyez sans quitter Quito."
+              description="Connectez votre boîte Gmail et envoyez sans quitter Baily."
             />
             <FeatureCard
               icon={<ShieldCheck />}
@@ -76,7 +76,7 @@ export default function Home() {
 
       <footer className="border-t">
         <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Quito
+          © {new Date().getFullYear()} Baily
         </div>
       </footer>
     </div>
