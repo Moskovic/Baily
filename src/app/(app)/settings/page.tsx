@@ -97,11 +97,11 @@ export default async function SettingsPage({
             )}
 
             {profile?.gmail_email ? (
-              <div className="flex items-center justify-between gap-4 rounded-md border bg-muted/40 p-4">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="size-5 text-emerald-600" />
-                  <div>
-                    <div className="font-medium">{profile.gmail_email}</div>
+              <div className="flex flex-col gap-3 rounded-md border bg-muted/40 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  <CheckCircle2 className="size-5 shrink-0 text-emerald-600" />
+                  <div className="min-w-0">
+                    <div className="font-medium truncate">{profile.gmail_email}</div>
                     <div className="text-xs text-muted-foreground">
                       Connecté — prêt à envoyer des quittances.
                     </div>
