@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShinyCard } from "@/components/shiny-card";
+import { OnboardingChecklist } from "@/components/onboarding-checklist";
 import { formatCurrency } from "@/lib/utils";
 import { OverdueTestButton } from "./overdue-test-button";
 
@@ -21,12 +22,18 @@ function flatten<T>(v: T | T[] | null | undefined): T | null {
 export default async function DashboardPage() {
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   const [
     { count: propertyCount },
     { count: tenantCount },
     { count: sentCount },
     { data: leases },
     { data: receiptsThisMonth },
+    { data: profile },
+    { count: leaseCount },
   ] = await Promise.all([
     supabase.from("properties").select("*", { count: "exact", head: true }),
     supabase.from("tenants").select("*", { count: "exact", head: true }),
@@ -42,7 +49,21 @@ export default async function DashboardPage() {
       .select("id, lease_id, status")
       .eq("period_month", new Date().getMonth() + 1)
       .eq("period_year", new Date().getFullYear()),
+    supabase
+      .from("profiles")
+      .select("full_name, gmail_email")
+      .eq("id", user!.id)
+      .single(),
+    supabase.from("leases").select("*", { count: "exact", head: true }),
   ]);
+
+  const onboardingStatus = {
+    profile: Boolean(profile?.full_name),
+    property: (propertyCount ?? 0) > 0,
+    tenant: (tenantCount ?? 0) > 0,
+    lease: (leaseCount ?? 0) > 0,
+    gmail: Boolean(profile?.gmail_email),
+  };
 
   type LeaseRow = NonNullable<typeof leases>[number] & {
     properties: { label: string } | { label: string }[] | null;
@@ -112,6 +133,8 @@ export default async function DashboardPage() {
         title="Tableau de bord"
         description={`${MONTH_LABELS[currentMonth - 1]} ${currentYear} — vue d'ensemble.`}
       />
+
+      <OnboardingChecklist status={onboardingStatus} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => {
