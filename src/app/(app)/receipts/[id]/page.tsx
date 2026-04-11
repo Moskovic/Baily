@@ -107,7 +107,7 @@ export default async function ReceiptDetailPage({
           <iframe
             src={`/api/receipts/${receipt.id}/pdf`}
             title="Aperçu quittance"
-            className="h-[900px] w-full border-0 bg-muted"
+            className="h-[500px] w-full border-0 bg-muted sm:h-[700px] lg:h-[900px]"
           />
         </Card>
 

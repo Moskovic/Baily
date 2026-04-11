@@ -59,15 +59,15 @@ export default async function LeasesPage() {
           description="Créez au moins un bien et un locataire avant d'ajouter un bail."
         />
       ) : leases && leases.length > 0 ? (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border bg-card overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Bien</TableHead>
-                <TableHead>Locataire</TableHead>
+                <TableHead className="hidden sm:table-cell">Locataire</TableHead>
                 <TableHead>Loyer</TableHead>
-                <TableHead>Charges</TableHead>
-                <TableHead>Début</TableHead>
+                <TableHead className="hidden md:table-cell">Charges</TableHead>
+                <TableHead className="hidden md:table-cell">Début</TableHead>
                 <TableHead className="w-24 text-right" />
               </TableRow>
             </TableHeader>
@@ -76,11 +76,14 @@ export default async function LeasesPage() {
                 <TableRow key={l.id}>
                   <TableCell className="font-medium">
                     {l.properties?.label ?? "—"}
+                    <div className="text-xs text-muted-foreground sm:hidden">
+                      {l.tenants?.full_name ?? "—"}
+                    </div>
                   </TableCell>
-                  <TableCell>{l.tenants?.full_name ?? "—"}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{l.tenants?.full_name ?? "—"}</TableCell>
                   <TableCell>{formatCurrency(l.rent_amount)}</TableCell>
-                  <TableCell>{formatCurrency(l.charges_amount)}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="hidden md:table-cell">{formatCurrency(l.charges_amount)}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">
                     {formatDate(l.start_date)}
                   </TableCell>
                   <TableCell>

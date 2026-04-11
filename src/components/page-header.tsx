@@ -10,7 +10,7 @@ export function PageHeader({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="mb-10 flex items-start justify-between gap-6">
+    <div className="mb-6 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
       <div className="min-w-0">
         {eyebrow && (
           <div className="mb-2 text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">

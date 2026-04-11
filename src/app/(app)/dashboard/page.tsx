@@ -191,33 +191,33 @@ export default async function DashboardPage() {
                   const isDraft = receiptStatus === "draft";
                   const prepareUrl = `/receipts/prepare?lease=${lease.id}&month=${currentMonth}&year=${currentYear}`;
                   return (
-                    <li key={lease.id} className="flex items-center gap-4 py-3">
+                    <li key={lease.id} className="flex flex-wrap items-center gap-3 py-3 sm:flex-nowrap sm:gap-4">
                       <div
-                        className={`flex size-12 shrink-0 flex-col items-center justify-center rounded-md border ${
+                        className={`flex size-10 shrink-0 flex-col items-center justify-center rounded-md border sm:size-12 ${
                           isToday
                             ? "border-primary bg-primary/10"
                             : "bg-muted/40"
                         }`}
                       >
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-[10px] text-muted-foreground sm:text-xs">
                           {MONTH_LABELS[currentMonth - 1].slice(0, 3)}
                         </div>
-                        <div className="text-sm font-semibold tabular-nums leading-none">
+                        <div className="text-xs font-semibold tabular-nums leading-none sm:text-sm">
                           {String(dueDay).padStart(2, "0")}
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="truncate font-medium">
+                        <div className="truncate font-medium text-sm sm:text-base">
                           {property?.label ?? "—"}
                         </div>
-                        <div className="truncate text-sm text-muted-foreground">
-                          {tenant?.full_name ?? "—"}
+                        <div className="truncate text-xs text-muted-foreground sm:text-sm">
+                          {tenant?.full_name ?? "—"} · {formatCurrency(total)}
                         </div>
                       </div>
-                      <div className="text-right tabular-nums font-medium">
+                      <div className="hidden text-right tabular-nums font-medium sm:block">
                         {formatCurrency(total)}
                       </div>
-                      <div className="w-36 text-right">
+                      <div className="ml-auto sm:w-36 sm:text-right">
                         {isSent ? (
                           <Link
                             href={`/receipts/${receiptId}`}

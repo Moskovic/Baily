@@ -39,28 +39,33 @@ export default async function PropertiesPage() {
       />
 
       {properties && properties.length > 0 ? (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border bg-card overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Libellé</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Adresse</TableHead>
-                <TableHead>Ville</TableHead>
+                <TableHead className="hidden sm:table-cell">Type</TableHead>
+                <TableHead className="hidden md:table-cell">Adresse</TableHead>
+                <TableHead className="hidden sm:table-cell">Ville</TableHead>
                 <TableHead className="w-24 text-right" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {properties.map((p) => (
                 <TableRow key={p.id}>
-                  <TableCell className="font-medium">{p.label}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium">
+                    {p.label}
+                    <div className="text-xs text-muted-foreground sm:hidden">
+                      {p.postal_code} {p.city}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <Badge variant="secondary">
                       {PROPERTY_TYPE_LABELS[(p.type ?? "apartment") as PropertyType]}
                     </Badge>
                   </TableCell>
-                  <TableCell>{p.address}</TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">{p.address}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     {p.postal_code} {p.city}
                   </TableCell>
                   <TableCell>

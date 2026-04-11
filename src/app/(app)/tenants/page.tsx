@@ -37,22 +37,27 @@ export default async function TenantsPage() {
       />
 
       {tenants && tenants.length > 0 ? (
-        <div className="rounded-lg border bg-card">
+        <div className="rounded-lg border bg-card overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Nom</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Téléphone</TableHead>
+                <TableHead className="hidden sm:table-cell">Email</TableHead>
+                <TableHead className="hidden md:table-cell">Téléphone</TableHead>
                 <TableHead className="w-24 text-right" />
               </TableRow>
             </TableHeader>
             <TableBody>
               {tenants.map((t) => (
                 <TableRow key={t.id}>
-                  <TableCell className="font-medium">{t.full_name}</TableCell>
-                  <TableCell>{t.email}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="font-medium">
+                    {t.full_name}
+                    <div className="text-xs text-muted-foreground sm:hidden">
+                      {t.email}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">{t.email}</TableCell>
+                  <TableCell className="hidden md:table-cell text-muted-foreground">
                     {t.phone || "—"}
                   </TableCell>
                   <TableCell>

@@ -160,10 +160,10 @@ export default async function ReceiptsPage({
                     <TableHeader>
                       <TableRow>
                         <TableHead>Bien</TableHead>
-                        <TableHead>Locataire</TableHead>
-                        <TableHead>Total</TableHead>
+                        <TableHead className="hidden sm:table-cell">Locataire</TableHead>
+                        <TableHead className="hidden sm:table-cell">Total</TableHead>
                         <TableHead>Statut</TableHead>
-                        <TableHead className="w-40 text-right" />
+                        <TableHead className="w-auto sm:w-40 text-right" />
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -177,9 +177,12 @@ export default async function ReceiptsPage({
                               <Link href={`/receipts/${r.id}`} className="hover:underline">
                                 {property?.label ?? "—"}
                               </Link>
+                              <div className="text-xs text-muted-foreground sm:hidden">
+                                {tenant?.full_name ?? "—"} · {formatCurrency(total)}
+                              </div>
                             </TableCell>
-                            <TableCell>{tenant?.full_name ?? "—"}</TableCell>
-                            <TableCell className="tabular-nums">
+                            <TableCell className="hidden sm:table-cell">{tenant?.full_name ?? "—"}</TableCell>
+                            <TableCell className="hidden sm:table-cell tabular-nums">
                               {formatCurrency(total)}
                             </TableCell>
                             <TableCell>
