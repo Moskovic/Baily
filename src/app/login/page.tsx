@@ -113,15 +113,15 @@ export default function LoginPage() {
                   id="code"
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  placeholder="123456"
-                  maxLength={6}
+                  placeholder="12345678"
+                  maxLength={8}
                   required
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                   disabled={loading}
                 />
               </div>
-              <Button type="submit" disabled={loading || code.length < 6}>
+              <Button type="submit" disabled={loading || code.length < 6 || code.length > 8}>
                 {loading && <Loader2 className="animate-spin" />}
                 Se connecter
               </Button>

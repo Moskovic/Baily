@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -10,6 +10,27 @@ export const metadata: Metadata = {
   title: "Baily — Quittances de loyer",
   description:
     "Éditez et envoyez vos quittances de loyer en quelques clics. Simple, rapide, sécurisé.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Baily",
+  },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#7c3aed",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({
