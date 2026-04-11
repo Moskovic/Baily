@@ -44,21 +44,6 @@ export default async function SettingsPage({
       <div className="flex flex-col gap-6">
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Palette className="size-5" />
-              Apparence
-            </CardTitle>
-            <CardDescription>
-              Choisissez le thème de l&apos;interface.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ThemeSelect />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
             <CardTitle>Profil bailleur</CardTitle>
             <CardDescription>
               Ces informations apparaissent sur les quittances générées.
@@ -139,6 +124,16 @@ export default async function SettingsPage({
                 </Button>
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-2 text-sm">
+              <Palette className="size-4 text-muted-foreground" />
+              <span className="font-medium">Apparence</span>
+            </div>
+            <ThemeSelect />
           </CardContent>
         </Card>
       </div>

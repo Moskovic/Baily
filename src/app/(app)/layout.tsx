@@ -33,11 +33,12 @@ export default async function AppLayout({
     .eq("id", user.id)
     .single();
 
+  const hasName = Boolean(profile?.full_name);
   const displayName = profile?.full_name || user.email || "Utilisateur";
 
   return (
     <div className="flex min-h-screen flex-1 flex-col md:flex-row bg-muted/30 md:p-3 md:gap-3">
-      <MobileNav email={user.email ?? ""} displayName={displayName} />
+      <MobileNav email={user.email ?? ""} displayName={displayName} hasName={hasName} />
 
       <aside className="hidden w-60 shrink-0 md:flex md:flex-col rounded-2xl border bg-card shadow-sm sticky top-3 h-[calc(100vh-1.5rem)]">
         <div className="flex h-16 items-center px-5">
@@ -72,7 +73,13 @@ export default async function AppLayout({
           <div className="mb-2 flex items-center gap-2.5 px-2">
             <UserAvatar name={displayName} size={28} />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium">{displayName}</div>
+              {hasName ? (
+                <div className="truncate text-sm font-medium">{displayName}</div>
+              ) : (
+                <Link href="/settings" className="text-xs text-primary hover:underline">
+                  Configurer le profil &rarr;
+                </Link>
+              )}
             </div>
             <ThemeToggle />
           </div>

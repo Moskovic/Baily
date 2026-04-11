@@ -27,7 +27,7 @@ const links = [
   { href: "/settings", icon: Settings, label: "Paramètres" },
 ];
 
-export function MobileNav({ email, displayName }: { email: string; displayName: string }) {
+export function MobileNav({ email, displayName, hasName }: { email: string; displayName: string; hasName: boolean }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
@@ -106,8 +106,20 @@ export function MobileNav({ email, displayName }: { email: string; displayName: 
           <div className="mb-3 flex items-center gap-2.5 px-1">
             <UserAvatar name={displayName} size={28} />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium">{displayName}</div>
-              <div className="truncate text-xs text-muted-foreground">{email}</div>
+              {hasName ? (
+                <>
+                  <div className="truncate text-sm font-medium">{displayName}</div>
+                  <div className="truncate text-xs text-muted-foreground">{email}</div>
+                </>
+              ) : (
+                <Link
+                  href="/settings"
+                  onClick={() => setOpen(false)}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Configurer le profil &rarr;
+                </Link>
+              )}
             </div>
             <ThemeToggle />
           </div>
