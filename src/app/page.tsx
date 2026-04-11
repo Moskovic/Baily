@@ -1,26 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, FileText, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PublicLayout } from "@/components/public-layout";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 force-light bg-background text-foreground min-h-screen [&_*]:border-border">
-      <header className="border-b">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="text-lg font-semibold tracking-tight brand-text">
-            Baily
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Button asChild variant="ghost">
-              <Link href="/login">Se connecter</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/login">Commencer</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
-
+    <PublicLayout>
       <main className="flex-1">
         <section className="relative mx-auto max-w-6xl px-6 py-24 text-center">
           <div
@@ -73,13 +58,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-
-      <footer className="border-t">
-        <div className="mx-auto max-w-6xl px-6 py-8 text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Baily
-        </div>
-      </footer>
-    </div>
+    </PublicLayout>
   );
 }
 
