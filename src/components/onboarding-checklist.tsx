@@ -98,7 +98,7 @@ export function OnboardingChecklist({ status }: { status: Status }) {
         <div className="mt-3">
           <Button asChild size="sm">
             <Link href="/onboarding">
-              Continuer la configuration
+              {doneCount === 0 ? "Commencer la configuration" : "Continuer la configuration"}
               <ChevronRight />
             </Link>
           </Button>
