@@ -16,7 +16,7 @@ export default function PrivacyPage() {
               Politique de confidentialité
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Dernière mise à jour : 12 avril 2026
+              Dernière mise à jour : 21 avril 2026
             </p>
           </header>
 
@@ -91,49 +91,174 @@ export default function PrivacyPage() {
               </p>
             </Section>
 
-            <Section title="6. Hébergement et sous-traitants">
+            <Section title="6. Partage des données">
+              <p>
+                <strong>
+                  Nous ne vendons, ne louons et ne partageons jamais les données
+                  utilisateur Google (Gmail user data) avec des tiers
+                </strong>{" "}
+                à des fins publicitaires, commerciales ou analytiques.
+              </p>
+              <p>
+                Les données utilisateur Google (y compris votre adresse email
+                Google, le jeton OAuth d&apos;actualisation et le contenu des
+                quittances envoyées via votre Gmail) ne sont partagées
+                qu&apos;avec les sous-traitants techniques strictement
+                nécessaires au fonctionnement du service :
+              </p>
               <table>
                 <thead>
                   <tr>
-                    <th>Service</th>
-                    <th>Usage</th>
+                    <th>Sous-traitant</th>
+                    <th>Données traitées</th>
+                    <th>Finalité</th>
                     <th>Localisation</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>Supabase</td>
+                    <td>Email, jeton OAuth, données locatives</td>
                     <td>Base de données, authentification</td>
                     <td>UE (AWS eu-west)</td>
                   </tr>
                   <tr>
                     <td>Vercel</td>
+                    <td>Trafic HTTP (sans stockage persistant)</td>
                     <td>Hébergement de l&apos;application</td>
                     <td>Global (Edge)</td>
                   </tr>
                   <tr>
                     <td>Resend</td>
-                    <td>Envoi d&apos;emails transactionnels</td>
+                    <td>Email de l&apos;utilisateur (destinataire)</td>
+                    <td>Envoi des codes de connexion</td>
                     <td>USA</td>
                   </tr>
                   <tr>
                     <td>Google (Gmail API)</td>
-                    <td>Envoi de quittances depuis votre Gmail</td>
+                    <td>Jeton OAuth, contenu des quittances</td>
+                    <td>Envoi de quittances depuis votre propre Gmail</td>
                     <td>USA</td>
                   </tr>
                 </tbody>
               </table>
-            </Section>
-
-            <Section title="7. Durée de conservation">
               <p>
-                Vos données sont conservées tant que votre compte est actif. En
-                cas de suppression de compte, toutes vos données sont supprimées
-                sous 30 jours.
+                Ces sous-traitants sont liés contractuellement au respect de la
+                confidentialité et à des obligations de sécurité. Les transferts
+                hors UE (Vercel, Resend, Google) sont encadrés par les{" "}
+                <strong>Clauses Contractuelles Types</strong> de la Commission
+                européenne.
+              </p>
+              <p>
+                Nous pouvons également divulguer certaines données si la loi
+                l&apos;exige (réquisition judiciaire, obligation légale).
+                Aucune autre forme de partage n&apos;est effectuée.
+              </p>
+              <h4>Restriction d&apos;usage spécifique aux données Google</h4>
+              <p>
+                L&apos;utilisation par Baily des données reçues via les API
+                Google est conforme à la{" "}
+                <a
+                  href="https://developers.google.com/terms/api-services-user-data-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Google API Services User Data Policy
+                </a>
+                , y compris les exigences d&apos;usage limité (Limited Use). Les
+                données utilisateur Google ne sont <strong>pas utilisées</strong>{" "}
+                pour du profilage, de la publicité, de la vente, de
+                l&apos;analyse de contenu, de l&apos;entraînement de modèles
+                d&apos;IA ou tout autre usage non nécessaire à la
+                fonctionnalité d&apos;envoi de quittances.
               </p>
             </Section>
 
-            <Section title="8. Vos droits">
+            <Section title="7. Sécurité et protection des données">
+              <p>
+                Nous mettons en œuvre des mesures techniques et
+                organisationnelles pour protéger vos données, y compris les
+                données sensibles telles que le jeton OAuth Gmail :
+              </p>
+              <ul>
+                <li>
+                  <strong>Chiffrement en transit</strong> — toutes les
+                  communications sont chiffrées via HTTPS/TLS 1.2+.
+                </li>
+                <li>
+                  <strong>Chiffrement au repos</strong> — la base de données
+                  Supabase (PostgreSQL) est chiffrée au repos (AES-256) par
+                  notre hébergeur.
+                </li>
+                <li>
+                  <strong>Row Level Security (RLS)</strong> — chaque table de
+                  notre base de données applique des politiques RLS strictes
+                  garantissant qu&apos;un utilisateur ne peut accéder
+                  qu&apos;à ses propres données.
+                </li>
+                <li>
+                  <strong>Isolation des jetons OAuth</strong> — les jetons
+                  d&apos;actualisation Gmail sont stockés dans une colonne
+                  protégée par RLS et uniquement accessibles par le
+                  back-end via une clé de service privée.
+                </li>
+                <li>
+                  <strong>Authentification forte</strong> — l&apos;accès au
+                  compte utilisateur se fait par code à usage unique (OTP) ou
+                  lien magique envoyé par email, sans mot de passe réutilisable.
+                </li>
+                <li>
+                  <strong>Accès minimal aux scopes</strong> — nous ne
+                  demandons que le scope <code>gmail.send</code>, jamais
+                  l&apos;accès en lecture à votre boîte mail, à vos contacts,
+                  ou à vos autres données Google.
+                </li>
+                <li>
+                  <strong>Secrets et clés API</strong> — les secrets
+                  (Google Client Secret, clé de service Supabase, clés SMTP)
+                  sont stockés dans les variables d&apos;environnement
+                  chiffrées de notre plateforme d&apos;hébergement, et ne sont
+                  jamais exposés au client.
+                </li>
+                <li>
+                  <strong>Journalisation limitée</strong> — aucun contenu
+                  d&apos;email ni jeton n&apos;est écrit dans nos logs.
+                </li>
+              </ul>
+            </Section>
+
+            <Section title="8. Durée de conservation et suppression">
+              <p>
+                Vos données sont conservées tant que votre compte est actif.
+              </p>
+              <ul>
+                <li>
+                  <strong>Révocation de l&apos;accès Gmail</strong> — vous
+                  pouvez déconnecter votre compte Gmail à tout moment depuis la
+                  page &laquo;&nbsp;Paramètres&nbsp;&raquo; de Baily. Le jeton
+                  OAuth est immédiatement supprimé de notre base de données.
+                  Vous pouvez également révoquer l&apos;accès depuis votre{" "}
+                  <a
+                    href="https://myaccount.google.com/permissions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    compte Google
+                  </a>
+                  .
+                </li>
+                <li>
+                  <strong>Suppression du compte</strong> — vous pouvez
+                  demander la suppression complète de votre compte et de
+                  l&apos;ensemble de vos données en écrivant à{" "}
+                  <a href="mailto:contact@baily.app">contact@baily.app</a>.
+                  Toutes les données sont supprimées définitivement sous{" "}
+                  <strong>30 jours</strong> à compter de la demande.
+                </li>
+              </ul>
+            </Section>
+
+            <Section title="9. Vos droits">
               <p>
                 Conformément au RGPD, vous disposez des droits suivants :
               </p>
@@ -150,7 +275,7 @@ export default function PrivacyPage() {
               </p>
             </Section>
 
-            <Section title="9. Cookies">
+            <Section title="10. Cookies">
               <p>
                 Baily utilise uniquement des cookies strictement nécessaires au
                 fonctionnement du service (session d&apos;authentification).
@@ -159,7 +284,7 @@ export default function PrivacyPage() {
               </p>
             </Section>
 
-            <Section title="10. Modifications">
+            <Section title="11. Modifications">
               <p>
                 Nous pouvons mettre à jour cette politique. En cas de
                 modification substantielle, un bandeau vous en informera lors de
