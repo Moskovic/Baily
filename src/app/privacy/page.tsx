@@ -197,10 +197,13 @@ export default function PrivacyPage() {
                   qu&apos;à ses propres données.
                 </li>
                 <li>
-                  <strong>Isolation des jetons OAuth</strong> — les jetons
-                  d&apos;actualisation Gmail sont stockés dans une colonne
-                  protégée par RLS et uniquement accessibles par le
-                  back-end via une clé de service privée.
+                  <strong>Protection des jetons OAuth</strong> — les jetons
+                  d&apos;actualisation Gmail sont <strong>chiffrés au repos</strong>{" "}
+                  (AES-256) dans notre base de données, stockés dans une colonne
+                  protégée par Row Level Security, jamais transmis en clair, et
+                  uniquement accessibles par le back-end via une clé de service
+                  privée. Ils ne sont jamais exposés au client, ni écrits dans
+                  nos logs.
                 </li>
                 <li>
                   <strong>Authentification forte</strong> — l&apos;accès au
