@@ -69,10 +69,13 @@ export default async function PropertiesPage() {
                       postal_code: p.postal_code,
                     }}
                   >
-                    <Button variant="ghost" size="sm">
-                      <Pencil />
+                    <button
+                      type="button"
+                      className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                    >
+                      <Pencil className="size-4" />
                       Modifier
-                    </Button>
+                    </button>
                   </PropertyDialog>
                   <DeleteButton id={p.id} />
                 </div>
@@ -117,9 +120,13 @@ export default async function PropertiesPage() {
                             postal_code: p.postal_code,
                           }}
                         >
-                          <Button variant="ghost" size="icon" title="Modifier">
-                            <Pencil />
-                          </Button>
+                          <button
+                            type="button"
+                            title="Modifier"
+                            className="inline-flex size-9 items-center justify-center rounded-md text-sm hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                          >
+                            <Pencil className="size-4" />
+                          </button>
                         </PropertyDialog>
                         <DeleteButton id={p.id} />
                       </div>
