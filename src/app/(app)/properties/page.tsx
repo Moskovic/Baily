@@ -108,6 +108,7 @@ export default async function PropertiesPage({
                 </div>
                 <div className="mt-3 flex items-center justify-end gap-1 border-t pt-3">
                   <PropertyDialog
+                    key={`m-edit-${p.id}`}
                     id={p.id}
                     defaults={{
                       label: p.label,
@@ -166,6 +167,7 @@ export default async function PropertiesPage({
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <PropertyDialog
+                          key={`d-edit-${p.id}`}
                           id={p.id}
                           defaults={{
                             label: p.label,

@@ -122,6 +122,7 @@ export default async function LeasesPage({
                 </div>
                 <div className="mt-3 flex items-center justify-end gap-1 border-t pt-3">
                   <LeaseDialog
+                    key={`m-edit-${l.id}`}
                     properties={properties ?? []}
                     tenants={tenants ?? []}
                     id={l.id}
@@ -182,6 +183,7 @@ export default async function LeasesPage({
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
                         <LeaseDialog
+                          key={`d-edit-${l.id}`}
                           properties={properties ?? []}
                           tenants={tenants ?? []}
                           id={l.id}
