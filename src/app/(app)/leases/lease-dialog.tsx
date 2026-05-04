@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { cloneElement, isValidElement, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -84,10 +83,20 @@ export function LeaseDialog({
     });
   }
 
+  const trigger = isValidElement<{ onClick?: (e: React.MouseEvent) => void }>(children)
+    ? cloneElement(children, {
+        onClick: (e: React.MouseEvent) => {
+          children.props.onClick?.(e);
+          setOpen(true);
+        },
+      })
+    : children;
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent>
+    <>
+      {trigger}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
         <DialogHeader>
           <DialogTitle>{isEdit ? "Modifier le bail" : "Nouveau bail"}</DialogTitle>
         </DialogHeader>
@@ -175,8 +184,9 @@ export function LeaseDialog({
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
