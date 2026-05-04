@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronRight, Download, Eye, FileText, Plus } from "lucide-react";
+import { ChevronRight, Download, Eye, FileText, Plus, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
@@ -18,6 +18,7 @@ import { ReceiptDialog } from "./receipt-dialog";
 import { DeleteReceiptButton } from "./delete-button";
 import { SendButton } from "./send-button";
 import { YearSelect } from "./year-select";
+import { BatchGenerateDialog } from "./batch-dialog";
 
 const MONTH_LABELS = [
   "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -91,15 +92,23 @@ export default async function ReceiptsPage({
         title="Quittances"
         description="Générez et envoyez vos quittances mensuelles."
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <YearSelect years={years} current={selectedYear} />
             {(leases?.length ?? 0) > 0 && (
-              <ReceiptDialog leases={leases ?? []}>
-                <Button>
-                  <Plus />
-                  Nouvelle quittance
-                </Button>
-              </ReceiptDialog>
+              <>
+                <BatchGenerateDialog>
+                  <Button variant="outline">
+                    <Sparkles />
+                    Générer le mois
+                  </Button>
+                </BatchGenerateDialog>
+                <ReceiptDialog leases={leases ?? []}>
+                  <Button>
+                    <Plus />
+                    Nouvelle quittance
+                  </Button>
+                </ReceiptDialog>
+              </>
             )}
           </div>
         }

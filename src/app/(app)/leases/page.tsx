@@ -2,6 +2,7 @@ import { FileText, Pencil, Plus } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/page-header";
 import { EmptyState } from "@/components/empty-state";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -14,8 +15,22 @@ import {
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { LeaseDialog } from "./lease-dialog";
 import { DeleteLeaseButton } from "./delete-button";
+import { ShowEndedToggle } from "./show-ended-toggle";
 
-export default async function LeasesPage() {
+function isLeaseEnded(endDate: string | null): boolean {
+  if (!endDate) return false;
+  return new Date(endDate) < new Date();
+}
+
+type SearchParams = Promise<{ ended?: string }>;
+
+export default async function LeasesPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { ended } = await searchParams;
+  const showEnded = ended === "1";
   const supabase = await createClient();
 
   const [{ data: leases }, { data: properties }, { data: tenants }] =
@@ -32,6 +47,12 @@ export default async function LeasesPage() {
     properties: { label: string } | null;
     tenants: { full_name: string } | null;
   };
+
+  const allLeases = (leases as LeaseRow[]) ?? [];
+  const endedCount = allLeases.filter((l) => isLeaseEnded(l.end_date)).length;
+  const visibleLeases = showEnded
+    ? allLeases
+    : allLeases.filter((l) => !isLeaseEnded(l.end_date));
 
   const canCreate = (properties?.length ?? 0) > 0 && (tenants?.length ?? 0) > 0;
 
@@ -52,21 +73,37 @@ export default async function LeasesPage() {
         }
       />
 
+      {endedCount > 0 && (
+        <div className="-mt-2 mb-4 flex items-center justify-between gap-3 text-sm">
+          <ShowEndedToggle initial={showEnded} />
+          {showEnded && (
+            <span className="text-xs text-muted-foreground">
+              {endedCount} bail{endedCount > 1 ? "s" : ""} terminé{endedCount > 1 ? "s" : ""} affiché{endedCount > 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      )}
+
       {!canCreate ? (
         <EmptyState
           icon={<FileText />}
           title="Prérequis manquants"
           description="Créez au moins un bien et un locataire avant d'ajouter un bail."
         />
-      ) : leases && leases.length > 0 ? (
+      ) : allLeases.length > 0 ? (
         <>
           {/* Mobile: card list */}
           <div className="flex flex-col gap-3 sm:hidden">
-            {(leases as LeaseRow[]).map((l) => (
-              <div key={l.id} className="rounded-lg border bg-card p-4">
+            {visibleLeases.map((l) => (
+              <div key={l.id} className={`rounded-lg border bg-card p-4 ${isLeaseEnded(l.end_date) ? "opacity-70" : ""}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium">{l.properties?.label ?? "—"}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium">{l.properties?.label ?? "—"}</span>
+                      {isLeaseEnded(l.end_date) && (
+                        <Badge variant="secondary" className="font-normal">Terminé</Badge>
+                      )}
+                    </div>
                     <div className="mt-1 text-sm text-muted-foreground">
                       {l.tenants?.full_name ?? "—"}
                     </div>
@@ -126,10 +163,15 @@ export default async function LeasesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(leases as LeaseRow[]).map((l) => (
-                  <TableRow key={l.id}>
+                {visibleLeases.map((l) => (
+                  <TableRow key={l.id} className={isLeaseEnded(l.end_date) ? "text-muted-foreground" : ""}>
                     <TableCell className="font-medium">
-                      {l.properties?.label ?? "—"}
+                      <div className="flex items-center gap-2">
+                        {l.properties?.label ?? "—"}
+                        {isLeaseEnded(l.end_date) && (
+                          <Badge variant="secondary" className="font-normal">Terminé</Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>{l.tenants?.full_name ?? "—"}</TableCell>
                     <TableCell>{formatCurrency(l.rent_amount)}</TableCell>
