@@ -3,9 +3,11 @@
 import { useState, useTransition, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import {
+  CalendarDays,
   CalendarPlus,
   ChevronRight,
   Euro,
+  Home,
   Info,
   Loader2,
   Sparkles,
@@ -37,7 +39,7 @@ const MONTH_LABELS = [
   "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
 ];
 
-type ChangeMode = "default" | "rent" | "tenant";
+type ChangeMode = "default" | "rent" | "payment-day" | "tenant" | "sold";
 
 type ItemState = BatchItem & {
   selected: boolean;
@@ -45,6 +47,8 @@ type ItemState = BatchItem & {
   // For rent change:
   newRent: number;
   newCharges: number;
+  // For payment-day change:
+  newPaymentDay: number;
   // For tenant change:
   newTenant: { full_name: string; email: string; phone: string };
   newLease: {
@@ -53,9 +57,18 @@ type ItemState = BatchItem & {
     payment_day: number;
     start_date: string;
   };
+  // For sold:
+  soldAt: string;
 };
 
-type Step = "list" | "choose-type" | "edit-rent" | "edit-tenant" | "review";
+type Step =
+  | "list"
+  | "choose-type"
+  | "edit-rent"
+  | "edit-payment-day"
+  | "edit-tenant"
+  | "edit-sold"
+  | "review";
 
 export function BatchGenerateDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -90,6 +103,7 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
           setOpen(false);
           return;
         }
+        const todayIso = new Date().toISOString().slice(0, 10);
         setItems(
           res.items.map((i) => ({
             ...i,
@@ -97,6 +111,7 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
             mode: "default" as ChangeMode,
             newRent: i.rentAmount,
             newCharges: i.chargesAmount,
+            newPaymentDay: i.paymentDay,
             newTenant: { full_name: "", email: "", phone: "" },
             newLease: {
               rent_amount: i.rentAmount,
@@ -104,6 +119,7 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
               payment_day: i.paymentDay,
               start_date: monthStartIso,
             },
+            soldAt: todayIso,
           }))
         );
       })
@@ -154,7 +170,9 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
   function chooseMode(mode: ChangeMode) {
     updateItem(editIdx, { mode });
     if (mode === "rent") setStep("edit-rent");
+    else if (mode === "payment-day") setStep("edit-payment-day");
     else if (mode === "tenant") setStep("edit-tenant");
+    else if (mode === "sold") setStep("edit-sold");
   }
 
   function submit() {
@@ -175,6 +193,30 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
           rentAmount: it.newRent,
           chargesAmount: it.newCharges,
           paymentDate: it.paymentDate,
+        };
+      }
+      if (it.mode === "payment-day") {
+        // Recompute payment date with new day for the current period.
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const dueDay = Math.min(it.newPaymentDay, daysInMonth);
+        const newPaymentDate = new Date(year, month - 1, dueDay)
+          .toISOString()
+          .slice(0, 10);
+        return {
+          mode: "payment-day",
+          leaseId: it.leaseId,
+          newPaymentDay: it.newPaymentDay,
+          rentAmount: it.rentAmount,
+          chargesAmount: it.chargesAmount,
+          paymentDate: newPaymentDate,
+        };
+      }
+      if (it.mode === "sold") {
+        return {
+          mode: "sold",
+          leaseId: it.leaseId,
+          propertyId: it.propertyId,
+          soldAt: it.soldAt,
         };
       }
       return {
@@ -345,6 +387,23 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
 
               <button
                 type="button"
+                onClick={() => chooseMode("payment-day")}
+                className="group flex items-center gap-4 rounded-lg border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <CalendarDays className="size-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium">Changement de date de paiement</div>
+                  <div className="text-sm text-muted-foreground">
+                    Modifie le jour du mois pour le paiement du loyer.
+                  </div>
+                </div>
+                <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </button>
+
+              <button
+                type="button"
                 onClick={() => chooseMode("tenant")}
                 className="group flex items-center gap-4 rounded-lg border bg-card p-4 text-left transition-colors hover:border-primary/40 hover:bg-primary/5"
               >
@@ -356,6 +415,24 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
                   <div className="text-sm text-muted-foreground">
                     Clôture le bail actuel et crée un nouveau locataire et
                     un nouveau bail.
+                  </div>
+                </div>
+                <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => chooseMode("sold")}
+                className="group flex items-center gap-4 rounded-lg border border-destructive/30 bg-card p-4 text-left transition-colors hover:border-destructive/60 hover:bg-destructive/5"
+              >
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-destructive/10 text-destructive">
+                  <Home className="size-5" />
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium">Bien vendu</div>
+                  <div className="text-sm text-muted-foreground">
+                    Clôture le bail, marque le bien comme vendu. Aucune
+                    quittance n&apos;est générée.
                   </div>
                 </div>
                 <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
@@ -419,6 +496,91 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
                 Retour
               </Button>
               <Button onClick={moveToNextEditOrReview}>
+                {remainingAfterCurrent > 0 ? "Suivant" : "Vérifier"}
+                <ChevronRight />
+              </Button>
+            </DialogFooter>
+          </>
+        ) : step === "edit-payment-day" && editingItem ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Changement de date de paiement</DialogTitle>
+              <DialogDescription>
+                {editingItem.propertyLabel} · {editingItem.tenantName}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="new-day">Nouveau jour de paiement</Label>
+              <Input
+                id="new-day"
+                type="number"
+                min={1}
+                max={31}
+                value={editingItem.newPaymentDay}
+                onChange={(e) =>
+                  updateItem(editIdx, {
+                    newPaymentDay: Number(e.target.value || 1),
+                  })
+                }
+              />
+              <p className="text-xs text-muted-foreground">
+                Jour du mois (1–31). Le bail sera mis à jour avec cette nouvelle
+                date pour les prochains mois.
+              </p>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setStep("choose-type")}
+              >
+                Retour
+              </Button>
+              <Button onClick={moveToNextEditOrReview}>
+                {remainingAfterCurrent > 0 ? "Suivant" : "Vérifier"}
+                <ChevronRight />
+              </Button>
+            </DialogFooter>
+          </>
+        ) : step === "edit-sold" && editingItem ? (
+          <>
+            <DialogHeader>
+              <DialogTitle>Bien vendu</DialogTitle>
+              <DialogDescription>
+                {editingItem.propertyLabel} · {editingItem.tenantName}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="sold-at">Date de vente</Label>
+                <Input
+                  id="sold-at"
+                  type="date"
+                  value={editingItem.soldAt}
+                  onChange={(e) =>
+                    updateItem(editIdx, { soldAt: e.target.value })
+                  }
+                />
+              </div>
+              <div className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs text-muted-foreground">
+                <p>
+                  <strong className="text-foreground">À noter :</strong> le
+                  bien sera marqué comme vendu et le bail clôturé. Aucune
+                  quittance ne sera générée pour {monthLabel.toLowerCase()}.
+                </p>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setStep("choose-type")}
+              >
+                Retour
+              </Button>
+              <Button onClick={moveToNextEditOrReview} disabled={!editingItem.soldAt}>
                 {remainingAfterCurrent > 0 ? "Suivant" : "Vérifier"}
                 <ChevronRight />
               </Button>
@@ -604,6 +766,9 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
                 {items.map((it) => {
                   const isTenantChange = !it.selected && it.mode === "tenant";
                   const isRentChange = !it.selected && it.mode === "rent";
+                  const isPaymentDayChange =
+                    !it.selected && it.mode === "payment-day";
+                  const isSold = !it.selected && it.mode === "sold";
                   const tenantDisplay = isTenantChange
                     ? it.newTenant.full_name || it.tenantName
                     : it.tenantName;
@@ -616,9 +781,15 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
                   return (
                     <li
                       key={it.leaseId}
-                      className="flex items-center gap-3 px-6 py-3"
+                      className={`flex items-center gap-3 px-6 py-3 ${
+                        isSold ? "opacity-60" : ""
+                      }`}
                     >
-                      <CalendarPlus className="size-4 shrink-0 text-muted-foreground" />
+                      {isSold ? (
+                        <Home className="size-4 shrink-0 text-destructive" />
+                      ) : (
+                        <CalendarPlus className="size-4 shrink-0 text-muted-foreground" />
+                      )}
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-sm truncate">
                           {it.propertyLabel}
@@ -630,15 +801,25 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
                               · loyer modifié
                             </span>
                           )}
+                          {isPaymentDayChange && (
+                            <span className="ml-2 text-primary">
+                              · jour de paiement modifié
+                            </span>
+                          )}
                           {isTenantChange && (
                             <span className="ml-2 text-primary">
                               · nouveau locataire
                             </span>
                           )}
+                          {isSold && (
+                            <span className="ml-2 text-destructive">
+                              · vendu — pas de quittance
+                            </span>
+                          )}
                         </div>
                       </div>
                       <div className="text-right tabular-nums text-sm">
-                        {formatCurrency(total)}
+                        {isSold ? "—" : formatCurrency(total)}
                       </div>
                     </li>
                   );
@@ -657,7 +838,12 @@ export function BatchGenerateDialog({ children }: { children: React.ReactNode })
               <Button onClick={submit} disabled={pending}>
                 {pending && <Loader2 className="animate-spin" />}
                 <Sparkles />
-                Générer {items.length} quittance{items.length > 1 ? "s" : ""}
+                {(() => {
+                  const willGenerate = items.filter(
+                    (it) => it.selected || it.mode !== "sold"
+                  ).length;
+                  return `Générer ${willGenerate} quittance${willGenerate > 1 ? "s" : ""}`;
+                })()}
               </Button>
             </DialogFooter>
           </>

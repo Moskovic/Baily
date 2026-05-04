@@ -140,6 +140,14 @@ export type BatchPayloadItem =
       paymentDate: string;
     }
   | {
+      mode: "payment-day";
+      leaseId: string;
+      newPaymentDay: number;
+      rentAmount: number;
+      chargesAmount: number;
+      paymentDate: string; // recomputed with new day
+    }
+  | {
       mode: "tenant";
       oldLeaseId: string;
       propertyId: string;
@@ -151,6 +159,12 @@ export type BatchPayloadItem =
         payment_day: number;
         start_date: string;
       };
+    }
+  | {
+      mode: "sold";
+      leaseId: string;
+      propertyId: string;
+      soldAt: string; // YYYY-MM-DD
     };
 
 export async function generateBatchReceipts(
@@ -203,6 +217,37 @@ export async function generateBatchReceipts(
       });
       if (error) return { error: `Quittance: ${error.message}` };
       created++;
+    } else if (it.mode === "payment-day") {
+      const { error: updErr } = await supabase
+        .from("leases")
+        .update({ payment_day: it.newPaymentDay })
+        .eq("id", it.leaseId);
+      if (updErr) return { error: `Bail: ${updErr.message}` };
+
+      const { error } = await supabase.from("receipts").insert({
+        lease_id: it.leaseId,
+        period_month: month,
+        period_year: year,
+        rent_amount: it.rentAmount,
+        charges_amount: it.chargesAmount,
+        payment_date: it.paymentDate,
+      });
+      if (error) return { error: `Quittance: ${error.message}` };
+      created++;
+    } else if (it.mode === "sold") {
+      // Mark property as sold + close the lease. No receipt generated.
+      const { error: soldErr } = await supabase
+        .from("properties")
+        .update({ sold_at: it.soldAt })
+        .eq("id", it.propertyId);
+      if (soldErr) return { error: `Bien: ${soldErr.message}` };
+
+      const { error: closeErr } = await supabase
+        .from("leases")
+        .update({ end_date: prevMonthEnd })
+        .eq("id", it.leaseId);
+      if (closeErr) return { error: `Clôture bail: ${closeErr.message}` };
+      // No receipt — skip increment.
     } else if (it.mode === "tenant") {
       // 1. Create the new tenant
       const { data: tenant, error: tenantErr } = await supabase

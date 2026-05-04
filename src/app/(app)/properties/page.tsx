@@ -15,13 +15,39 @@ import {
 } from "@/components/ui/table";
 import { PropertyDialog } from "./property-dialog";
 import { DeleteButton } from "./delete-button";
+import { ShowSoldToggle } from "./show-sold-toggle";
 
-export default async function PropertiesPage() {
+type PropertyRow = {
+  id: string;
+  label: string;
+  type: PropertyType | null;
+  address: string;
+  city: string;
+  postal_code: string;
+  sold_at: string | null;
+};
+
+type SearchParams = Promise<{ sold?: string }>;
+
+export default async function PropertiesPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const { sold } = await searchParams;
+  const showSold = sold === "1";
+
   const supabase = await createClient();
-  const { data: properties } = await supabase
+  const { data: rawProperties } = await supabase
     .from("properties")
     .select("*")
     .order("created_at", { ascending: false });
+
+  const allProperties = (rawProperties as PropertyRow[]) ?? [];
+  const soldCount = allProperties.filter((p) => p.sold_at).length;
+  const properties = showSold
+    ? allProperties
+    : allProperties.filter((p) => !p.sold_at);
 
   return (
     <>
@@ -38,15 +64,37 @@ export default async function PropertiesPage() {
         }
       />
 
-      {properties && properties.length > 0 ? (
+      {soldCount > 0 && (
+        <div className="-mt-2 mb-4 flex items-center justify-between gap-3 text-sm">
+          <ShowSoldToggle initial={showSold} />
+          {showSold && (
+            <span className="text-xs text-muted-foreground">
+              {soldCount} bien{soldCount > 1 ? "s" : ""} vendu{soldCount > 1 ? "s" : ""} affiché{soldCount > 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      )}
+
+      {allProperties.length > 0 && properties.length === 0 ? (
+        <EmptyState
+          icon={<Building2 />}
+          title="Tous vos biens sont marqués vendus"
+          description="Activez le bouton « Afficher les biens vendus » pour les voir."
+        />
+      ) : properties && properties.length > 0 ? (
         <>
           {/* Mobile: card list */}
           <div className="flex flex-col gap-3 sm:hidden">
             {properties.map((p) => (
-              <div key={p.id} className="rounded-lg border bg-card p-4">
+              <div key={p.id} className={`rounded-lg border bg-card p-4 ${p.sold_at ? "opacity-70" : ""}`}>
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium">{p.label}</div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium">{p.label}</span>
+                      {p.sold_at && (
+                        <Badge variant="destructive" className="font-normal">Vendu</Badge>
+                      )}
+                    </div>
                     <div className="mt-1 text-sm text-muted-foreground">
                       {p.address}
                     </div>
@@ -97,8 +145,15 @@ export default async function PropertiesPage() {
               </TableHeader>
               <TableBody>
                 {properties.map((p) => (
-                  <TableRow key={p.id}>
-                    <TableCell className="font-medium">{p.label}</TableCell>
+                  <TableRow key={p.id} className={p.sold_at ? "text-muted-foreground" : ""}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {p.label}
+                        {p.sold_at && (
+                          <Badge variant="destructive" className="font-normal">Vendu</Badge>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <Badge variant="secondary">
                         {PROPERTY_TYPE_LABELS[(p.type ?? "apartment") as PropertyType]}
